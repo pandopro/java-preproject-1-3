@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="java-preproject-1-1:war exploded5 archive">
+    <output-path>$PROJECT_DIR$/out/artifacts/java_preproject_1_1_war_exploded5_archive</output-path>
+    <root id="archive" name="java-preproject-1-1_war exploded5 archive.war">
+      <element id="artifact" artifact-name="java-preproject-1-1:war exploded5" />
+    </root>
+  </artifact>
+</component>
