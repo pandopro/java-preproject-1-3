@@ -3,22 +3,30 @@ package DAO;
 import model.User;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 import java.util.List;
 
 public class UserHibernateDAO implements UserDAO {
     private Session session;
+    private Configuration configuration;
+    private SessionFactory sessionFactory;
+//
+//    public void setSessionHibernate(Session session) {
+//        this.session = session;
+//    }
 
-    public UserHibernateDAO(Session session) {
-        this.session = session;
-    }
-
-    public void setSessionHibernate(Session session) {
-        this.session = session;
+    public UserHibernateDAO(Configuration configuration) {
+        this.configuration = configuration;
+        sessionFactory = getSessionFactory();
     }
 
     public boolean createUser(User user) {
+        session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
             session.save(user);
@@ -35,10 +43,11 @@ public class UserHibernateDAO implements UserDAO {
     }
 
     public User readUser(long id) {
-        return new User();
+        return session.get(User.class, id);
     }
 
     public List<User> readAllUser() {
+        session = sessionFactory.openSession();
         List<User> userList = null;
         Transaction transaction = session.beginTransaction();
         try {
@@ -55,6 +64,7 @@ public class UserHibernateDAO implements UserDAO {
     }
 
     public boolean delete(long id) {
+        session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
 
@@ -72,6 +82,7 @@ public class UserHibernateDAO implements UserDAO {
     }
 
     public boolean editUser(User user) {
+        session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
             session.update(user);
@@ -87,5 +98,21 @@ public class UserHibernateDAO implements UserDAO {
         return true;
     }
 
+    public SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            sessionFactory = createSessionFactory();
+        }
+        return sessionFactory;
+
+    }
+
+
+    private SessionFactory createSessionFactory() {
+        Configuration configuration = this.configuration;
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+        builder.applySettings(configuration.getProperties());
+        ServiceRegistry serviceRegistry = builder.build();
+        return configuration.buildSessionFactory(serviceRegistry);
+    }
 
 }

@@ -1,23 +1,17 @@
 package DAO;
 
 import model.User;
-import org.hibernate.Session;
-import util.DBHelper;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserJdbcDAO implements UserDAO {
     Connection connection;
-    public UserJdbcDAO(Connection mysqlConnection) {
-        connection = DBHelper.getMysqlConnection();
 
-    }
+    public UserJdbcDAO(Connection myConnection) {
+        connection = myConnection;
 
-    //то мне делать с этим методом?
-    @Override
-    public void setSessionHibernate(Session session) {
-        throw new RuntimeException("ты дебильный? прекрати");
     }
 
     @Override

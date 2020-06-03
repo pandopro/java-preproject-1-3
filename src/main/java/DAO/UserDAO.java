@@ -7,8 +7,6 @@ import org.hibernate.Session;
 import java.util.List;
 
 public interface UserDAO {
-    //как поступить в таком случае
-    public void setSessionHibernate(Session session);
 
     public boolean createUser(User user);
 
