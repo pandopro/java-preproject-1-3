@@ -1,6 +1,7 @@
 package DAO;
 
 import util.DBHelper;
+import util.PropertyReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,14 +13,14 @@ public class UserDAOFactory {
 
     public UserDAO getUserDAO() {
         try {
-            Properties prop = loadProp();
-            String type = prop.getProperty("daotype");
+            //("db.properties");
+            String type = PropertyReader.loadProp("db.properties").getProperty("daotype");
             if ("jdbc".equals(type)) {
                 userDAO = new UserJdbcDAO(DBHelper.getConnection());
                 ((UserJdbcDAO) userDAO).createTable();
             } else if("hibernate".equals(type)){
                 if (userDAO == null) {
-                    userDAO = new UserHibernateDAO(DBHelper.getConfiguration());
+                    userDAO = new UserHibernateDAO(DBHelper.getSessionFactory());
                 }
             } else {
                 throw new RuntimeException("error DAO layer  "+type+"__");
@@ -33,11 +34,6 @@ public class UserDAOFactory {
         return null;
     }
 
-    private Properties loadProp() throws IOException {
-        Properties prop = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("db.properties");
-        prop.load(inputStream);
-        return prop;
-    }
+
 
 }

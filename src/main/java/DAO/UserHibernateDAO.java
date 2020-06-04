@@ -13,16 +13,14 @@ import java.util.List;
 
 public class UserHibernateDAO implements UserDAO {
     private Session session;
-    private Configuration configuration;
     private SessionFactory sessionFactory;
 //
 //    public void setSessionHibernate(Session session) {
 //        this.session = session;
 //    }
 
-    public UserHibernateDAO(Configuration configuration) {
-        this.configuration = configuration;
-        sessionFactory = getSessionFactory();
+    public UserHibernateDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public boolean createUser(User user) {
@@ -98,21 +96,6 @@ public class UserHibernateDAO implements UserDAO {
         return true;
     }
 
-    public SessionFactory getSessionFactory() {
-        if (sessionFactory == null) {
-            sessionFactory = createSessionFactory();
-        }
-        return sessionFactory;
 
-    }
-
-
-    private SessionFactory createSessionFactory() {
-        Configuration configuration = this.configuration;
-        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
-        builder.applySettings(configuration.getProperties());
-        ServiceRegistry serviceRegistry = builder.build();
-        return configuration.buildSessionFactory(serviceRegistry);
-    }
 
 }
