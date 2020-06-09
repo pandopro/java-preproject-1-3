@@ -11,35 +11,35 @@ public class UserJdbcDAO implements UserDAO {
 
     public UserJdbcDAO(Connection myConnection) {
         connection = myConnection;
-
     }
 
     @Override
     public boolean createUser(User user) {
-        PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connection.prepareStatement("INSERT into user(name , email, country) values(?,?, ?)");
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getCountry());
-            preparedStatement.executeUpdate();
-            return true;
-
+            try {
+                connection.setAutoCommit(false);
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT into user(name , email, country) values(?,?, ?)");
+                preparedStatement.setString(1, user.getName());
+                preparedStatement.setString(2, user.getEmail());
+                preparedStatement.setString(3, user.getCountry());
+                preparedStatement.executeUpdate();
+                connection.commit();
+                return true;
+            } catch (SQLException throwables) {
+                connection.rollback();// использование с одной транзакцией избыточно?
+            } finally {
+                connection.setAutoCommit(true);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            return false;
         }
+        return false;
     }
 
-    @Override
-    public User readUser(long id) {
-
-        return null;
-    }
 
     @Override
     public List<User> readAllUser() {
-        List<User> list = new ArrayList<User>();
+        List<User> list = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("select * from user");
             ps.executeQuery();
@@ -59,36 +59,47 @@ public class UserJdbcDAO implements UserDAO {
 
     @Override
     public boolean delete(long id) {
-        PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connection.prepareStatement("DELETE FROM user WHERE id=?");
-            preparedStatement.setLong(1, id);
-            return preparedStatement.executeUpdate() > 0;
-
-        } catch (SQLException throwables) {
+            try {
+                connection.setAutoCommit(false);
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM user WHERE id=?");
+                preparedStatement.setLong(1, id);
+                preparedStatement.executeUpdate();
+                connection.commit();
+                return true;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (Exception throwables) {
             throwables.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     @Override
     public boolean editUser(User user) {
-        PreparedStatement ps = null;
         try {
-            ps = connection.prepareStatement("update user set name=?,email=?,country=? where id=?");
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getCountry());
-            ps.setLong(4, user.getId());
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException throwables) {
+            try {
+                connection.setAutoCommit(false);
+                PreparedStatement ps = connection.prepareStatement("update user set name=?,email=?,country=? where id=?");
+                ps.setString(1, user.getName());
+                ps.setString(2, user.getEmail());
+                ps.setString(3, user.getCountry());
+                ps.setLong(4, user.getId());
+                ps.executeUpdate();
+                ps.close();
+                return true;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (Exception throwables) {
             throwables.printStackTrace();
-            return false;
         }
-
-        return true;
-
+        return false;
     }
 
     public void createTable() throws SQLException {

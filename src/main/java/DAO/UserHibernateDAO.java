@@ -40,10 +40,6 @@ public class UserHibernateDAO implements UserDAO {
 
     }
 
-    public User readUser(long id) {
-        return session.get(User.class, id);
-    }
-
     public List<User> readAllUser() {
         session = sessionFactory.openSession();
         List<User> userList = null;

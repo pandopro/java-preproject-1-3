@@ -10,8 +10,6 @@ public interface UserDAO {
 
     public boolean createUser(User user);
 
-    public User readUser(long id);
-
     public List<User> readAllUser();
 
     public boolean delete(long id);
